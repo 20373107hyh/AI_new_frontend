@@ -99,7 +99,7 @@ export const teacherRoutes = [
   {
     path: '/form',
     component: Layout,
-    meta: { title: '编辑', icon: 'form'},
+    meta: { title: '编辑', icon: 'form' },
     children: [
       {
         path: 'chapter_add',
@@ -117,11 +117,9 @@ export const teacherRoutes = [
     ]
   },
 
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-
 
 export const studentRoutes = [
   {
@@ -162,8 +160,8 @@ export const studentRoutes = [
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      component: () => import('@/views/dashboard/studentdash'),
+      meta: { title: '用户信息', icon: 'dashboard' }
     }]
   },
   
@@ -173,8 +171,6 @@ export const studentRoutes = [
     name: 'Experiment',
     component: () => import('@/views/table/experiment')
   },
-
-
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

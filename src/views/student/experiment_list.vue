@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="experiment-box">
-            <div v-for="(course, key) in course_list[index]" :key="key" @click="handleEnter(course)">
+            <div v-for="(course, key) in course_list[index]" :key="key" @click="handleEnter(course)" style="margin: 20px;">
               <el-card class="box-card">
                 <div class="left" style="width:120px">
                   <img src="~@/assets/exp_hep.png" style="width:112px; height: 145px;">
