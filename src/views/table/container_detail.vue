@@ -16,6 +16,8 @@
           <el-button v-on:click="submitSingleFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传文件</el-button>
         选择文件夹：<input type="file" ref="folderFiles" multiple webkitdirectory @change="handleFileUpload" style="margin: 15px;"/>
           <el-button v-on:click="submitFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传文件夹</el-button>
+          <br>若文件大小较大（如视频文件），请通过此方式上传：<input type="file" ref="largeFile" @change="handleLargeFileUpload" style="margin: 15px;"/>
+          <el-button v-on:click="submitLargeFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传大文件</el-button>
           <div class="fileUpload">
             指定文件上传路径：
             <el-input placeholder="请输入路径，注意路径不以/结尾，文件夹名不以.开头" v-model="path" style="width: 70%;">
@@ -81,7 +83,9 @@ export default {
     return {
       singleFile: [], //files uploading
       folderFiles: [],
+      largeFile: null,
       tarData: null,
+      singleTarData: null,
       selectedFiles: [],
       uploaded_files:[], //已上传的文件
       container_info: {},
@@ -152,25 +156,81 @@ export default {
         });
     },
     handleSingleFileUpload() {
-        let filesArray = Array.from(this.$refs.singleFile.files);
-        this.tarData = []; // Ensure it's set to array before usage
-        let filePromises = filesArray.map(file => {
-            return new Promise((resolve, reject) => {
-                let reader = new FileReader();
-                reader.onload = () => {
-                    this.tarData.push({name: file.name, data: reader.result}); 
-                    resolve();
-                };
-                reader.onerror = reject;
-                reader.readAsArrayBuffer(file);
-            });
-        });
+          let file = this.$refs.singleFile.files[0];
+          let reader = new FileReader();
+          reader.onload = () => {
+                let pack = tarStream.pack();
+                pack.entry({ name: file.name }, new Buffer(reader.result));
+                pack.finalize();
+                pack.pipe(bl((err, data) => {
+                  if (err) {
+                    console.error(err);
+                    return;
+                  }
+                            
+                  let blob = new Blob([data], { type: "application/x-tar" });
+                  let reader2 = new FileReader();
+                  reader2.onloadend = () => {
+                    this.singleTarData = reader2.result; // Directly set the tarData for the single file
+                  };
+                  reader2.readAsArrayBuffer(blob);
+                  this.listLoading = false
+                }));
+          };
 
-        Promise.all(filePromises).then(() => {
-            console.log("All files have been read.");
-        }).catch(error => {
-            console.error(error);
-        });
+          reader.onerror = (error) => {
+              console.error(error);
+          }
+  
+          reader.readAsArrayBuffer(file);
+      },
+    handleLargeFileUpload() {
+      this.largeFile = this.$refs.largeFile.files[0]; // 获取文件
+    },
+    async submitLargeFile() {
+      if (!this.largeFile) {
+        console.log("未选择大文件");
+        return;
+      }
+      this.listLoading = true
+      const chunkSize = 1024 * 1024 * 5; // 设置chunk大小为5MB
+      const chunks = Math.ceil(this.largeFile.size / chunkSize); // 计算文件需要分割的块数
+      let user_id = localStorage.getItem('user_id')
+      let container_name = this.container_info.container_name
+
+      for (let i = 0; i < chunks; i++) {
+        const start = i * chunkSize;
+        const end = start + chunkSize >= this.largeFile.size ? this.largeFile.size : start + chunkSize;
+        const chunk = new Blob([this.largeFile.slice(start, end)], {type: 'text/plain'}); // 分割文件
+        let formData = new FormData();
+        formData.append('file', chunk, `chunk-${i}-${this.largeFile.name}`);
+        formData.append('fileName', this.largeFile.name);
+        formData.append('user_id', user_id)
+        formData.append('container_name', container_name)
+        formData.append('path', this.path)
+          
+        // 使用axios上传文件块(chunk)
+        await this.$axios({
+          method: 'post',
+          url: '/teacher/upload_chunk/',
+          data: formData,
+          headers: { 'Content-Type': 'multipart/form-data' } 
+        })
+      }
+      const formData1 = new FormData()
+      formData1.append('filename', this.largeFile.name)
+      formData1.append('chunks', chunks)
+      formData1.append('user_id', user_id)
+      formData1.append('container_name', container_name)
+      formData1.append('path', this.path)
+      // 合并文件块
+      await this.$axios({
+        method: 'post',
+        url: '/teacher/merge_chunks/',
+        data: formData1
+      });
+      this.listLoading = false
+      this.loadFiles(container_name)
     },
     isSelectable(file) {
       // 这个函数决定哪些文件可以被选中
@@ -178,6 +238,7 @@ export default {
       return true;
     },
     submitFile(){
+        this.listLoading = true
         let formData = new FormData();
         let user_id = localStorage.getItem('user_id')
         let container_name = this.container_info.container_name
@@ -205,13 +266,12 @@ export default {
     },
 
     submitSingleFile(){
+        this.listLoading = true
         let formData = new FormData();
         let user_id = localStorage.getItem('user_id')
         let container_name = this.container_info.container_name
-        for(let fileData of this.tarData) {
-            let blob = new Blob([fileData], {type: "application/octet-stream"});  
-            formData.append('files[]', blob, fileData.name);  
-        }
+        let blob = new Blob([this.singleTarData], {type: "application/x-tar"}); // Use the tarData for the single file created in the method handleSingleFileUpload
+        formData.append('tarFile', blob, this.$refs.singleFile.files[0].name + '.tar'); // Append the tarFile to the form data
         formData.append('user_id', user_id);
         formData.append('container_name', container_name);
         formData.append('path', this.path);

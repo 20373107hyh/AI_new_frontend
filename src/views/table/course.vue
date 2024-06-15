@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <h3 style="position: relative; left:15px">课程管理</h3>
     <el-button @click="CreateCourseOpen()" style="margin: 20px;" type="primary"> 创建新课程 </el-button>
 
     <el-table
@@ -147,6 +148,7 @@ export default {
         }).then(
           res => {
             console.log(res)
+            window.alert(res.data.msg)
             this.fetchData()
             this.listLoading = false
           }

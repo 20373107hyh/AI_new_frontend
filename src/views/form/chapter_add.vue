@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button @click="addDialogOpen()"> 创建新章节 </el-button>
+    <el-button @click="addDialogOpen()" type="primary" style="margin: 15px;"> 创建新章节 </el-button>
 
     <el-dialog title="添加新章节" :visible.sync="addDialogVisible" width="40%" center>
       <el-form ref="dataForm" :model="form" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
@@ -49,7 +49,7 @@
       <el-table-column align="center" prop="created_at" label="操作" width="200">
         <template slot-scope="scope">
           <span>
-            <el-button type="primary" @click="handleDelete(scope.row.chapter_num)"> 删除 </el-button>
+            <el-button type="danger" @click="handleDelete(scope.row.chapter_num)"> 删除 </el-button>
           </span>
         </template>
       </el-table-column>

@@ -1,6 +1,9 @@
 <template>
     <div class="app-container">
+      <h3 style="position: relative; left:15px">用户管理</h3>
       <el-button @click="AddUserDialogOpen()" style="margin: 20px;" type="primary"> 新建用户 </el-button>
+      <br>通过EXCEL表格批量新建：<input type="file" ref="excelFile" @change="handleExcelFileUpload" style="margin: 15px;"/>
+      <el-button v-on:click="AddUserByExcel()" :disabled="listLoading" style="margin: 15px;" type="primary">批量新建</el-button>
   
       <el-table
         v-loading="listLoading"
@@ -45,11 +48,12 @@
             {{ scope.row.status}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作" width="200">
+        <el-table-column align="center" label="操作" width="300">
           <template slot-scope="scope">
             <span>
+              <el-button type="primary" v-if="scope.row.status==='student'" @click="TurnToDetail(scope.row.user_id)"> 查看 </el-button>
               <el-button type="primary" @click="AlterDialogOpen(scope.row)"> 修改 </el-button>
-              <el-button type="primary" @click="handleDelete(scope.row.user_id)"> 删除 </el-button>
+              <el-button type="danger" @click="handleDelete(scope.row.user_id)" v-if="isself(scope.row.user_id)===false"> 删除 </el-button>
             </span>
           </template>
         </el-table-column>
@@ -102,12 +106,6 @@
                 <el-form-item label="手机号" prop="com">
                     <el-input v-model="user_form.phone" clearable style="width: 300px; margin-left: 20px"/>
                 </el-form-item>
-                <el-form-item label="用户身份">
-                    <el-radio-group v-model="user_form.status">
-                        <el-radio :label="'teacher'">教师</el-radio>
-                        <el-radio :label="'student'">学生</el-radio>
-                    </el-radio-group>
-                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="userDialogVisible = false"> 取消 </el-button>
@@ -153,7 +151,8 @@
         new_container_name: '',
         course_list: [],
         userDialogVisible: false,
-        alterDialogVisible: false
+        alterDialogVisible: false,
+        excelFile: []
       }
     },
     created() {
@@ -193,6 +192,13 @@
               this.listLoading = false
             }
           )
+      },
+      isself(id){
+        if(id == localStorage.getItem('user_id')){
+          return true
+        }
+        else
+          return false
       },
       AddUserDialogOpen(){
         this.userDialogVisible = true
@@ -264,6 +270,34 @@
             }
           )
           this.alterDialogVisible = false
+      },
+      TurnToDetail(user_id){
+        this.$router.push({
+          path:'/manage/user_detail',
+          query:{
+            user_id: user_id,
+          }
+        })
+      },
+      handleExcelFileUpload() {
+        this.excelFile = this.$refs.excelFile.files[0]; // 获取文件
+      },
+      AddUserByExcel() {
+        let formData = new FormData();
+        let excelFile = this.excelFile
+        formData.append("excel_file", excelFile);
+  
+        this.$axios({
+          method: 'post',
+          url: '/teacher/add_user_by_excel/',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(res => {
+          window.alert(res.data.msg)
+          this.fetchData()
+        })
       }
     }
   }

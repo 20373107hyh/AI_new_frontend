@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <h3 style="position: relative; left:15px">镜像管理</h3>
     <div class="buttons" style="margin: 20px;"> 
       <el-button @click="CreateDialogOpen()" type="primary"> 创建新容器 </el-button>
       <el-button @click="CommitDialogOpen()" type="primary"> 构建新镜像 </el-button>
@@ -225,6 +226,7 @@ export default {
         }).then(
           res => {
             console.log(res)
+            window.alert(res.data.msg)
             this.fetchData()
             this.listLoading = false
           }
@@ -259,7 +261,7 @@ export default {
             console.log(res)
             this.fetchData()
             this.listLoading = false
-            window.alert('新容器创建成功')
+            window.alert(res.data.msg)
           }
         )
         this.addDialogVisible = false
@@ -291,7 +293,7 @@ export default {
             console.log(res)
             this.fetchData()
             this.listLoading = false
-            window.alert('新镜像创建成功')
+            window.alert(res.data.msg)
           }
         )
         this.commitDialogVisible = false

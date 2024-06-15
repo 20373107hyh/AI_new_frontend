@@ -5,6 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+import component from 'vue-pdf'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -79,14 +80,30 @@ export const teacherRoutes = [
         meta: { title: '课程管理', icon: 'table' }
       },
       {
+        path: 'course_file',
+        name: 'course_file',
+        component: () => import('@/views/table/manage_course_file'),
+        meta: { title: '课程文件管理', icon: 'table' }
+      },
+      {
         path: 'course_detail',
         name: 'Course_detail',
         component: () => import('@/views/table/course_detail')
       },
       {
+        path: 'user_detail',
+        name: 'User_detail',
+        component: () => import('@/views/table/user_detail')
+      },
+      {
         path: 'container_detail',
         name: 'Container_detail',
         component: () => import('@/views/table/container_detail')
+      },
+      {
+        path: 'view_course_file',
+        name: 'view_course_file',
+        component: () => import('@/views/view_file/file_viewer')
       },
     ]
   },
@@ -147,9 +164,20 @@ export const studentRoutes = [
         meta: { title: '实验列表', icon: 'form' }
       },
       {
+        path: 'course_file_list',
+        name: 'Form',
+        component: () => import('@/views/student/student_course_file'),
+        meta: { title: '查看课件', icon: 'form' }
+      },
+      {
         path: 'experiment_detail',
         name: 'Form',
         component: () => import('@/views/student/experiment_detail'),
+      },
+      {
+        path: 'view_course_file',
+        name: 'Form',
+        component: () => import('@/views/student/file_viewer.vue')
       }
     ]
   },
