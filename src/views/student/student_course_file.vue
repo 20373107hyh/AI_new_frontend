@@ -19,7 +19,6 @@
               label="操作">
               <template slot-scope="scope">
                   <el-button @click="viewFile(scope.row.filename)" type="primary">查看文件</el-button>
-                  <el-button @click="downloadFile(scope.row.filename)" type="primary">下载文件</el-button>
               </template>
               </el-table-column>
           </el-table>
@@ -60,7 +59,7 @@ export default {
       this.listLoading = true
       this.$axios({
           method: 'post',
-          url: '/teacher/load_course_files/',
+          url: '/student/load_course_files/',
         }).then(
           res => {
             console.log(res)
@@ -73,28 +72,6 @@ export default {
       //   this.listLoading = false
       // })
     },
-    downloadFile(filename) {
-          let formData = new FormData();
-          formData.append('filename', filename);
-          console.log(filename)
-          this.$axios({
-              method: 'post',
-              url: '/teacher/download_course_file/', 
-              data: formData,
-              responseType: 'blob',
-          })
-          .then((response) => {
-              const url = window.URL.createObjectURL(new Blob([response.data]));
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', filename);
-              document.body.appendChild(link);
-              link.click();
-          })
-          .catch((error) => {
-              console.error(error);
-          });
-      },
     viewFile(filename){
       this.$router.push({
         path:'/view_course_file',

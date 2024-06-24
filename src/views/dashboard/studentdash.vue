@@ -2,9 +2,8 @@
   <div class="dashboard-container">
     <div class="dashboard-text">用户名: {{ userinfo.username }}</div>
     <div class="dashboard-text">姓名: {{ userinfo.realname }}</div>
-    <div class="dashboard-text">邮箱: <el-input v-model="userinfo.email" clearable style="width: 300px;"/></div>
-    <div class="dashboard-text">电话: <el-input v-model="userinfo.phone" clearable style="width: 300px;"/></div>
-    <div class="dashboard-text"><el-button @click="handleChangeUserInfo"> 修改个人信息 </el-button></div>
+    <div class="dashboard-text">邮箱: {{userinfo.email}}</div>
+    <div class="dashboard-text">电话: {{userinfo.phone}}</div>
     <div class="dashboard-text">原密码:<el-input
           :key="passwordType"
           ref="password"
@@ -38,7 +37,7 @@
           style="width: 300px;"
         />
     </div>
-    <div class="dashboard-text"><el-button @click="handleChangePassword"> 修改密码 </el-button></div>
+    <div class="dashboard-text"><el-button type="primary" @click="handleChangePassword"> 修改密码 </el-button></div>
   </div>
 </template>
 
@@ -70,7 +69,27 @@ export default {
                     this.userinfo = res.data.data
                 }
             )
+    },
+    handleChangePassword(){
+      let user_id = localStorage.getItem('user_id');
+      const formData = new FormData()
+      formData.append('user_id', user_id)
+      formData.append('old_password', this.originpassword)
+      formData.append('new_password', this.changepassword)
+      formData.append('sure_password', this.surepassword)
+      this.$axios({
+        method: 'post',
+        url:'/user/change_password/',
+        data: formData,
+      }).then(res=>{
+        console.log(res)
+        window.alert(res.data.msg)
+      })
+      this.originpassword = ''
+      this.changepassword = ''
+      this.surepassword = ''
     }
+
   },
   created(){
     this.getInfo()

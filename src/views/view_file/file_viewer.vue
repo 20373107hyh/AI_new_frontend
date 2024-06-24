@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="viewFile">
-            <div style="height:10%; position: relative; left: 25%; display: flex;"> 
+            <div style="height:10%; position: relative; left: 18%; display: flex;"> 
                 <h3 style="margin: 15px; position: relative; top: 10px;">正在查看课件：{{filename}}</h3>
                 <el-button @click="prevPage" :disabled="page === 1" type="primary" v-if="fileType === 'application/pdf'" style="margin: 15px;">上一页</el-button>
                 <el-button @click="nextPage" :disabled="page === pages" type="primary" v-if="fileType === 'application/pdf'" style="margin: 15px;">下一页</el-button>
@@ -13,16 +13,19 @@
                 :page="page"
                 @num-pages="p => pages =p"
                 v-if="fileType === 'application/pdf'"
-                style="width: 50%; height: 80%; position: relative; left: 25%;"
+                style="width: 80%;position: relative; left:10%"
             />
 
 
             <video-player :options="playerOptions" 
-                v-if="fileType.startsWith('video/')" 
+                v-if="fileType.startsWith('video')" 
                 >
             </video-player>
+            <div v-if="fileType === '' " style="height:10%; position: relative; left: 30%; display: flex;">
+              <h1 > 文件正在加载中，请稍后 </h1>
+            </div>
 
-            <div v-if="fileType !== 'application/pdf' && !fileType.startsWith('video/')" style="height:10%; position: relative; left: 30%; display: flex;">
+            <div v-if="fileType !== 'application/pdf' && !fileType.startsWith('video') && fileType !=='' " style="height:10%; position: relative; left: 30%; display: flex;">
               <h1 > 该文件格式暂不支持线上查看，请下载到本地 </h1>
             </div>
         </div>
@@ -71,29 +74,54 @@
       };
     },
     methods: {
+      isPdf(filename) {
+        return filename.toLowerCase().endsWith('.pdf') || filename.toLowerCase().endsWith('.PDF');
+      },
+      isVideo(filename){
+        return filename.toLowerCase().endsWith('.mp4') || filename.toLowerCase().endsWith('.webm') || filename.toLowerCase().endsWith('.MP4') || filename.toLowerCase().endsWith('.WEBM');
+      },
       getFile() {
         const formData = new FormData();
         let filename = this.$route.query.filename
+        this.filename = filename
+        let user_id = localStorage.getItem('user_id')
+        formData.append('user_id', user_id)
         formData.append('filename', filename);
-  
-        this.$axios({
-          method: 'post',
-          url: '/teacher/download_course_file/',
-          data: formData,
-          responseType: 'blob',
-          crossOrigin: "Anonymous"
-        }).then(response => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          this.fileUrl = url;
-          console.log(this.fileUrl)
-          // 更新文件类型
-          this.fileType = response.headers['content-type']; // 更新为实际的文件类型
-          console.log(this.fileType)
-          if (this.fileType.startsWith('video/')) {
-            this.playerOptions.sources[0].src = url;
+        this.fileType = ''
+
+          if(!this.isVideo(filename)){
+            this.$axios({
+              method: 'post',
+              url: '/teacher/download_course_file/',
+              data: formData,
+              responseType: 'blob',
+              crossOrigin: "Anonymous"
+            }).then(response => {
+              const url = window.URL.createObjectURL(new Blob([response.data]));
+              this.fileUrl = url;
+              console.log(this.fileUrl)
+              // 更新文件类型
+              this.fileType = response.headers['content-type']; // 更新为实际的文件类型
+              console.log(this.fileType)
+              if (this.fileType === 'application/pdf') {
+                // 如果文件类型为PDF，启动计时器
+                this.startInterval();
+              } else if (this.fileType.startsWith('video/')) {
+                  this.playerOptions.sources[0].src = url;
+                  this.playerOptions.sources[0].type = this.fileType;
+              }
+            });
+          }
+          else{
+            let extension = filename.split('.').pop();
+            this.fileType = 'video/' + extension
+            console.log(this.fileType)
+            let fileUrl = "http://buaacdn.xiaolegou.top/" + filename
+            this.fileUrl = fileUrl
+            this.playerOptions.sources[0].src = fileUrl;
             this.playerOptions.sources[0].type = this.fileType;
           }
-        });
+
       },
       prevPage() {
             if ( this.page > 1 )

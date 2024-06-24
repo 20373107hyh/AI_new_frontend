@@ -2,12 +2,16 @@
     <div class="app-container">
       <h3 style="position: relative; left:15px">课程文件管理</h3>
       <div class="upload-box" style="margin: 15px;">
-        选择文件：<input type="file" ref="singleFile" multiple @change="handleSingleFileUpload" style="margin: 15px;"/>
-          <el-button v-on:click="submitSingleFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传文件</el-button>
-        选择文件夹：<input type="file" ref="folderFiles" multiple webkitdirectory @change="handleFileUpload" style="margin: 15px;"/>
+        PDF课件上传：
+        <br>选择PDF文件：<input type="file" ref="singleFile" accept=".pdf" @change="handleSingleFileUpload" style="margin: 15px;"/>
+          <el-button v-on:click="submitSingleFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传PDF文件</el-button>
+        选择文件夹（只会上传PDF文件）：<input type="file" ref="folderFiles" multiple webkitdirectory @change="handleFileUpload" style="margin: 15px;"/>
           <el-button v-on:click="submitFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传文件夹</el-button>
-        <br>若文件大小较大，请通过此方式上传：<input type="file" ref="largeFile" @change="handleLargeFileUpload" style="margin: 15px;"/>
-          <el-button v-on:click="submitLargeFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传大文件</el-button>
+        <br>视频文件请通过此方式上传，支持MP4和WEBM格式：<input type="file" ref="largeFile" accept=".webm,.mp4" @change="handleLargeFileUpload" style="margin: 15px;"/>
+          <el-button v-on:click="submitLargeFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传视频文件</el-button>
+          <br>注意，请不要通过上传视频的板块上传其他类型的文件，否则会出现上传文件无法删除的情况
+          <div style="margin: 15px;" v-if="uploadstatus === 1"> 正在上传视频文件： {{percentage}}%，中途请不要离开或者刷新本界面</div>
+          <div style="margin: 15px;" v-if="uploadstatus === 2"> 正在合并视频文件，中途请不要离开或者刷新本界面</div>
       </div>
   
       <el-table 
@@ -65,7 +69,9 @@
         folderFiles: [],
         largeFile: [],
         tarData: null,
-        listLoading: false
+        listLoading: false,
+        percentage: 0,
+        uploadstatus: 0,
       }
     },
     created() {
@@ -100,7 +106,9 @@
       handleFileUpload() {
         this.listLoading = true
         let filesArray = Array.from(this.$refs.folderFiles.files);
-        let filePromises = filesArray.map(file => {
+        let filteredFilesArray = filesArray.filter(file => file.type === 'application/pdf');
+
+        let filePromises = filteredFilesArray.map(file => {
           return new Promise((resolve, reject) => {
               let reader = new FileReader();
               reader.onload = () => {
@@ -140,6 +148,10 @@
       },
       handleSingleFileUpload() {
           let file = this.$refs.singleFile.files[0];
+          if (file.type !== 'application/pdf') {
+            window.alert('文件不是PDF!');
+            return;
+          }
           let reader = new FileReader();
           reader.onload = () => {
                 let pack = tarStream.pack();
@@ -176,35 +188,51 @@
           return;
         }
         this.listLoading = true
+        this.uploadstatus = 1
         const chunkSize = 1024 * 1024 * 5; // 设置chunk大小为5MB
         const chunks = Math.ceil(this.largeFile.size / chunkSize); // 计算文件需要分割的块数
 
         for (let i = 0; i < chunks; i++) {
+          setTimeout(() => {
+            // 这里编写您要延迟执行的函数逻辑
+          }, 1000);
+          let result = Math.floor((i / chunks) * 100);
+          this.percentage = result
           const start = i * chunkSize;
           const end = start + chunkSize >= this.largeFile.size ? this.largeFile.size : start + chunkSize;
           const chunk = new Blob([this.largeFile.slice(start, end)], {type: 'text/plain'}); // 分割文件
           let formData = new FormData();
           formData.append('file', chunk, `chunk-${i}-${this.largeFile.name}`);
           formData.append('fileName', this.largeFile.name);
-            
+          
           // 使用axios上传文件块(chunk)
-          await this.$axios({
-            method: 'post',
-            url: '/teacher/upload_course_chunk/',
-            data: formData,
-            headers: { 'Content-Type': 'multipart/form-data' } 
-          })
+          try {
+              await this.$axios({
+                  method: 'post',
+                  url: '/teacher/upload_course_chunk/',
+                  data: formData,
+                  headers: { 'Content-Type': 'multipart/form-data' } 
+              });
+          } catch (error) {
+              window.alert('上传过程中出现错误：', error);
+              this.listLoading = false;
+              return;
+          }
         }
         const formData1 = new FormData()
         formData1.append('filename', this.largeFile.name)
         formData1.append('chunks', chunks)
         // 合并文件块
+        this.uploadstatus = 2
         await this.$axios({
           method: 'post',
           url: '/teacher/merge_course_chunks/',
           data: formData1
+        }).then(res=>{
+          window.alert(res.data.msg)
         });
         this.listLoading = false
+        this.uploadstatus = 0
         this.fetchData()
       },
       submitFile(){
@@ -260,7 +288,7 @@
             url: '/teacher/delete_course_files/',
             data: formData,
           }).then(response => {
-            console.log(response)
+            window.alert(response.data.msg)
             this.fetchData()
           })
             .catch(error => console.log(error));
@@ -269,6 +297,7 @@
         console.log(this.selectedFiles)
         this.onDelete(this.selectedFiles); // Call onDelete with the paths of the selected files
       },
+      
       downloadFile(filename) {
             let formData = new FormData();
             formData.append('filename', filename);

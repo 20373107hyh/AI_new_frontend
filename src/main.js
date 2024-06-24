@@ -28,7 +28,7 @@ import '@/permission' // permission control
  */
 Vue.prototype.$axios = axios
 Vue.prototype.$qs = qs
-// axios.defaults.baseURL = 'http://39.105.203.95:8000'
+// axios.defaults.baseURL = 'http://121.40.203.195:8000'
 axios.defaults.baseURL = 'http://127.0.0.1:8000'
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })

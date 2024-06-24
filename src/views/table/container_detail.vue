@@ -6,7 +6,7 @@
       <div class="detail-text">配置：{{ container_info.cpu_num }}核CPU, {{ container_info.mem_size }}G内存 </div>
       <div class="detail-text">SSH端口: {{ container_info.ssh_port }}</div>
       <div class="detail-text">HTTP端口: {{ container_info.http_port }}</div>
-      <div class="detail-text">SSH命令: ssh root@39.105.203.95 -p {{ container_info.ssh_port }}</div>
+      <div class="detail-text">SSH命令: ssh root@121.40.203.195 -p {{ container_info.ssh_port }}</div>
       <div class="detail-text">SSH密码: {{ container_info.ssh_password }}</div>
     </div>
     <div >
@@ -17,6 +17,8 @@
         选择文件夹：<input type="file" ref="folderFiles" multiple webkitdirectory @change="handleFileUpload" style="margin: 15px;"/>
           <el-button v-on:click="submitFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传文件夹</el-button>
           <br>若文件大小较大（如视频文件），请通过此方式上传：<input type="file" ref="largeFile" @change="handleLargeFileUpload" style="margin: 15px;"/>
+          <div style="margin: 15px;" v-if="uploadstatus === 1"> 正在上传大文件： {{percentage}}%，中途请不要离开或者刷新本界面</div>
+          <div style="margin: 15px;" v-if="uploadstatus === 2"> 正在合并大文件</div>
           <el-button v-on:click="submitLargeFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传大文件</el-button>
           <div class="fileUpload">
             指定文件上传路径：
@@ -91,6 +93,8 @@ export default {
       container_info: {},
       path: '',
       listLoading: true,
+      percentage: 0,
+      uploadstatus: 0,
     };
   },
   methods: {
@@ -193,12 +197,15 @@ export default {
         return;
       }
       this.listLoading = true
-      const chunkSize = 1024 * 1024 * 5; // 设置chunk大小为5MB
+      const chunkSize = 1024 * 1024 * 20; // 设置chunk大小为20MB
+      this.uploadstatus = 1
       const chunks = Math.ceil(this.largeFile.size / chunkSize); // 计算文件需要分割的块数
       let user_id = localStorage.getItem('user_id')
       let container_name = this.container_info.container_name
 
       for (let i = 0; i < chunks; i++) {
+        let result = Math.floor((i / chunks) * 100);
+        this.percentage = result
         const start = i * chunkSize;
         const end = start + chunkSize >= this.largeFile.size ? this.largeFile.size : start + chunkSize;
         const chunk = new Blob([this.largeFile.slice(start, end)], {type: 'text/plain'}); // 分割文件
@@ -210,12 +217,19 @@ export default {
         formData.append('path', this.path)
           
         // 使用axios上传文件块(chunk)
-        await this.$axios({
-          method: 'post',
-          url: '/teacher/upload_chunk/',
-          data: formData,
-          headers: { 'Content-Type': 'multipart/form-data' } 
-        })
+
+        try {
+            await this.$axios({
+                method: 'post',
+                url: '/teacher/upload_chunk/',
+                data: formData,
+                headers: { 'Content-Type': 'multipart/form-data' } 
+            });
+        } catch (error) {
+            console.error('上传过程中出现错误：', error);
+            this.listLoading = false;
+            return;
+        }
       }
       const formData1 = new FormData()
       formData1.append('filename', this.largeFile.name)
@@ -223,12 +237,14 @@ export default {
       formData1.append('user_id', user_id)
       formData1.append('container_name', container_name)
       formData1.append('path', this.path)
+      this.uploadstatus = 2
       // 合并文件块
       await this.$axios({
         method: 'post',
         url: '/teacher/merge_chunks/',
         data: formData1
       });
+      this.uploadstatus = 0
       this.listLoading = false
       this.loadFiles(container_name)
     },

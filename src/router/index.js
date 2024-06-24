@@ -159,24 +159,24 @@ export const studentRoutes = [
     children: [
       {
         path: 'experiment_list',
-        name: 'Form',
+        name: 'experiment_list',
         component: () => import('@/views/student/experiment_list'),
         meta: { title: '实验列表', icon: 'form' }
       },
       {
         path: 'course_file_list',
-        name: 'Form',
+        name: 'course_file_list',
         component: () => import('@/views/student/student_course_file'),
         meta: { title: '查看课件', icon: 'form' }
       },
       {
         path: 'experiment_detail',
-        name: 'Form',
+        name: 'experiment_detail',
         component: () => import('@/views/student/experiment_detail'),
       },
       {
         path: 'view_course_file',
-        name: 'Form',
+        name: 'view_course_file',
         component: () => import('@/views/student/file_viewer.vue')
       }
     ]
