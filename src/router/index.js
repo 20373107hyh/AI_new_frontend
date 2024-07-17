@@ -77,13 +77,19 @@ export const teacherRoutes = [
         path: 'course',
         name: 'Course',
         component: () => import('@/views/table/course'),
-        meta: { title: '课程管理', icon: 'table' }
+        meta: { title: '实验课程管理', icon: 'table' }
       },
       {
         path: 'course_file',
         name: 'course_file',
         component: () => import('@/views/table/manage_course_file'),
         meta: { title: '课程文件管理', icon: 'table' }
+      },
+      {
+        path: 'replay_file',
+        name: 'replay_file',
+        component: () => import('@/views/table/manage_replay_file'),
+        meta: { title: '回放文件管理', icon: 'table' }
       },
       {
         path: 'course_detail',
@@ -120,19 +126,85 @@ export const teacherRoutes = [
     children: [
       {
         path: 'chapter_add',
-        name: '章节添加',
+        name: '实验章节添加',
         component: () => import('@/views/form/chapter_add'),
-        meta: { title: '章节添加', icon: 'form' }
+        meta: { title: '实验章节添加', icon: 'form' }
       },
       {
         path: 'course_add',
-        name: '课程添加',
+        name: '实验课程添加',
         component: () => import('@/views/form/course_add'),
-        meta: { title: '课程添加', icon: 'form' }
+        meta: { title: '实验课程添加', icon: 'form' }
       },
 
     ]
   },
+
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+export const managerRoutes = [
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [{
+      path: 'dashboard',
+      name: 'Dashboard',
+      component: () => import('@/views/dashboard/managerdash'),
+      meta: { title: 'Dashboard', icon: 'dashboard' }
+    }]
+  },
+  {
+    path: '/manage',
+    component: Layout,
+    redirect: '/manage/user',
+    name: '管理',
+    meta: { title: '管理', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'user',
+        name: 'user',
+        component: () => import('@/views/student_manager/manage_user'),
+        meta: { title: '用户管理', icon: 'table' }
+      },
+      {
+        path: 'course_file',
+        name: 'course_file',
+        component: () => import('@/views/student_manager/manage_course_file'),
+        meta: { title: '课程文件管理', icon: 'table' }
+      },
+      {
+        path: 'replay_file',
+        name: 'replay_file',
+        component: () => import('@/views/student_manager/manage_replay_file'),
+        meta: { title: '回放文件管理', icon: 'table' }
+      },
+      {
+        path: 'user_detail',
+        name: 'User_detail',
+        component: () => import('@/views/student_manager/user_detail')
+      },
+      {
+        path: 'view_course_file',
+        name: 'view_course_file',
+        component: () => import('@/views/student_manager/file_viewer')
+      },
+    ]
+  },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -154,20 +226,26 @@ export const studentRoutes = [
     path: '/',
     component: Layout,
     redirect: '/experiment_list',
-    name: '实验列表',
-    meta: { title: '实验列表', icon: 'form' },
+    name: '课程列表',
+    meta: { title: '课程列表', icon: 'form' },
     children: [
       {
         path: 'experiment_list',
         name: 'experiment_list',
         component: () => import('@/views/student/experiment_list'),
-        meta: { title: '实验列表', icon: 'form' }
+        meta: { title: '实验课程', icon: 'form' }
       },
       {
         path: 'course_file_list',
         name: 'course_file_list',
         component: () => import('@/views/student/student_course_file'),
-        meta: { title: '查看课件', icon: 'form' }
+        meta: { title: '理论课程', icon: 'form' }
+      },
+      {
+        path: 'replay_file_list',
+        name: 'replay_file_list',
+        component: () => import('@/views/student/student_replay_file'),
+        meta: { title: '课程回放', icon: 'form' }
       },
       {
         path: 'experiment_detail',
@@ -178,6 +256,11 @@ export const studentRoutes = [
         path: 'view_course_file',
         name: 'view_course_file',
         component: () => import('@/views/student/file_viewer.vue')
+      },
+      {
+        path: 'view_replay_file',
+        name: 'view_replay_file',
+        component: () => import('@/views/student/replay_file_viewer.vue')
       }
     ]
   },
@@ -207,11 +290,14 @@ export const studentRoutes = [
 
 const getRoutesByUserType = (router) => {
   const usertype = localStorage.getItem('status')
-  console.log(usertype)
+  // console.log(usertype)
   if (usertype === 'teacher') {
     return teacherRoutes
   }
-  else {
+  else if(usertype === 'manager'){
+    return managerRoutes
+  }
+  else{
     return studentRoutes
   }
 }

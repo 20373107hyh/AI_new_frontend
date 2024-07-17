@@ -14,9 +14,9 @@
             :name="chapter.chapter_num.toString()" 
             :title=" chapter.chapter_num + '  ' + chapter.chapter_name"
         >
-            <div style="display: flex; margin: 15px;"><h3 style="width: 75%;">{{ chapter.chapter_intro }} </h3>
+            <div style="display: flex; margin: 15px;"><h3 style="width: 70%;">{{ chapter.chapter_intro }} </h3>
               <div>  
-                <el-button v-on:click="altChapterDialogOpen(chapter)" style="margin: 15px; position: relative;" type="primary">编辑章节信息</el-button>
+                <el-button v-on:click="altChapterDialogOpen(chapter.chapter_num)" style="margin: 15px; position: relative;" type="primary">编辑章节信息</el-button>
                 <el-button v-on:click="deleteChapter(chapter.chapter_num)" style="margin: 15px; position: relative;" type="danger">删除章节</el-button>
               </div>
             </div>
@@ -49,10 +49,9 @@
                 </el-table-column>
                 <el-table-column
                     label="操作"
-                    width="500"
+                    width="400"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="primary" @click="altSectionDialogOpen(scope.row)">编辑小节信息</el-button>
                       <el-button type="primary" @click="uploadDialogOpen(scope.row.chapter_number, scope.row.section_number)">上传课件</el-button>
                       <el-button type="primary" @click="uploadExerciseDialogOpen(scope.row.chapter_number, scope.row.section_number)">上传练习</el-button>
                       <el-button type="danger" @click="deleteSection(scope.row.chapter_number, scope.row.section_number)">删除小节</el-button>
@@ -83,8 +82,8 @@
 
     <el-dialog title="编辑章节信息" :visible.sync="altChapterDialogVisible" width="40%" center>
       <el-form ref="dataForm" :model="chapter_info" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-        <el-form-item label="课程章节" style="width: 300px; margin-left: 20px">
-          第{{chapter_info.chapter_num}}章
+        <el-form-item label="课程章节">
+          第<el-input-number v-model="chapter_info.chapter_num" :min="1" :max="100"></el-input-number>章
         </el-form-item>
         <el-form-item label="章节名称" prop="com">
           <el-input v-model="chapter_info.chapter_name" clearable style="width: 300px; margin-left: 20px"/>
@@ -129,15 +128,22 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="编辑小节信息" :visible.sync="altSectionDialogVisible" width="40%" center>
+    <el-dialog title="修改小节信息" :visible.sync="altSectionDialogVisible" width="40%" center>
       <el-form ref="dataForm" :model="section_info" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-        <el-form-item label="课程章节" style="width: 300px; margin-left: 20px">
+        <el-form-item label="课程章节">
           <div style="display: flex;">
-            第{{section_info.chapter_num}}章
+            第<el-select v-model="section_info.chapter_num" placeholder="请选择" style="width: 300px; margin-left: 20px">
+            <el-option
+              v-for="item in chapters"
+              :key="item.chapter_num"
+              :label="item.chapter_num"
+              :value="item.chapter_num">
+            </el-option>
+            </el-select>章
           </div>
         </el-form-item>
-        <el-form-item label="课程小节" style="width: 300px; margin-left: 20px">
-          第{{section_info.section_num}}节
+        <el-form-item label="课程小节">
+          第<el-input-number v-model="section_info.section_num" :min="1" :max="100"></el-input-number>节
         </el-form-item>
         <el-form-item label="小节名称" prop="com">
           <el-input v-model="section_info.section_name" clearable style="width: 300px; margin-left: 20px"/>
@@ -252,8 +258,6 @@
         current_chapter: 1,
         current_section: 1,
         exercise_stem: '',
-        altChapterDialogVisible: false,
-        altSectionDialogVisible: false,
       }
     },
     created() {
@@ -279,9 +283,6 @@
       },
       addChapterDialogOpen(){
         this.addChapterDialogVisible = true
-        this.chapter_info.chapter_name = ''
-        this.chapter_info.chapter_num = 1
-        this.chapter_info.chapter_intro = ''
       },
       handleAddChapter(){
         const formData = new FormData()
@@ -306,10 +307,6 @@
       },
       addSectionDialogOpen(){
         this.addSectionDialogVisible = true
-        this.section_info.chapter_num = 1
-        this.section_info.section_num = 1
-        this.section_info.section_name = ''
-        this.section_info.section_intro = ''
       },
       handleAddSection(){
         const formData = new FormData()
@@ -651,65 +648,8 @@
           path:'/manage/view_course_file',
           query:{
             filename: filename,
-            filetype: 1,
           }
         })
-      },
-      altChapterDialogOpen(chapter){
-        this.altChapterDialogVisible = true
-        this.chapter_info.chapter_num = chapter.chapter_num
-        this.chapter_info.chapter_name = chapter.chapter_name
-        this.chapter_info.chapter_intro = chapter.chapter_intro
-      },
-      handleAltChapter(){
-        const formData = new FormData()
-        formData.append('chapter_num', this.chapter_info.chapter_num)
-        formData.append('chapter_name', this.chapter_info.chapter_name)
-        formData.append('chapter_intro', this.chapter_info.chapter_intro)
-        this.$axios({
-            method: 'post',
-            url: '/teacher/alt_theory_chapter/',
-            data: formData,
-          }).then(
-            res => {
-              // console.log(res)
-              window.alert(res.data.msg)
-              this.fetchData()
-            }
-          )
-        this.altChapterDialogVisible = false
-        this.chapter_info.chapter_name = ''
-        this.chapter_info.chapter_num = 1
-        this.chapter_info.chapter_intro = ''
-      },
-      altSectionDialogOpen(row){
-        this.altSectionDialogVisible = true
-        this.section_info.chapter_num = row.chapter_number
-        this.section_info.section_num = row.section_number
-        this.section_info.section_name = row.section_name
-        this.section_info.section_intro = row.section_intro
-      },
-      handleAltSection(){
-        const formData = new FormData()
-        formData.append('chapter_num', this.section_info.chapter_num)
-        formData.append('section_num', this.section_info.section_num)
-        formData.append('section_name', this.section_info.section_name)
-        formData.append('section_intro', this.section_info.section_intro)
-        this.$axios({
-            method: 'post',
-            url: '/teacher/alt_theory_section/',
-            data: formData,
-          }).then(
-            res => {
-              window.alert(res.data.msg)
-              this.fetchData()
-            }
-          )
-        this.altSectionDialogVisible = false
-        this.section_info.chapter_num = 1
-        this.section_info.section_num = 1
-        this.section_info.section_name = ''
-        this.section_info.section_intro = ''
       },
     }
   }

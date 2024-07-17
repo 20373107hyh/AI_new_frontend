@@ -112,7 +112,7 @@ export default {
         url: '/teacher/load_files/',
         data: formData,
       }).then(res => {
-        console.log(res)
+        // // console.log(res)
         this.uploaded_files = res.data.data
         this.listLoading = false
       })
@@ -193,7 +193,7 @@ export default {
     },
     async submitLargeFile() {
       if (!this.largeFile) {
-        console.log("未选择大文件");
+        // // console.log("未选择大文件");
         return;
       }
       this.listLoading = true
@@ -273,12 +273,11 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          // // console.log(response);
           this.loadFiles(container_name);
           this.files = [];
           this.listLoading = false;
         })
-        .catch(error => console.log(error));
     },
 
     submitSingleFile(){
@@ -301,15 +300,14 @@ export default {
             }
         })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           this.loadFiles(container_name);
           this.tarData = []; // Reset the tarData for next usage
           this.listLoading = false;
         })
-        .catch(error => console.log(error));
     },
     onDelete(path){
-      console.log(path)
+      // console.log(path)
       const formData = new FormData();
       let user_id = localStorage.getItem('user_id')
       let container_name = this.container_info.container_name
@@ -321,13 +319,12 @@ export default {
           url: '/teacher/delete_file/',
           data: formData,
         }).then(response => {
-          console.log(response)
+          // console.log(response)
           this.loadFiles(container_name)
         })
-          .catch(error => console.log(error));
     },
     onDeleteSelectedFiles(){
-      console.log(this.selectedFiles)
+      // console.log(this.selectedFiles)
       this.onDelete(this.selectedFiles); // Call onDelete with the paths of the selected files
     },
     search_container(){
@@ -339,15 +336,14 @@ export default {
           url: '/teacher/search_container/',
           data: formData,
         }).then(response => {
-          console.log(response)
+          // console.log(response)
           this.container_info = response.data.data
           this.loadFiles(response.data.data.container_name)
         })
-          .catch(error => console.log(error));
     },
     handleEnter(){
       let url = this.container_info.container_url
-      console.log(url)
+      // console.log(url)
       window.open(url, '_blank');
     },
     handleReturn(){

@@ -1,9 +1,6 @@
 <template>
     <div class="app-container">
-      <h3 style="position: relative; left:15px">用户管理</h3>
-      <el-button @click="AddUserDialogOpen()" style="margin: 20px;" type="primary"> 新建用户 </el-button>
-      <br>通过EXCEL表格批量新建：<input type="file" ref="excelFile" @change="handleExcelFileUpload" style="margin: 15px;"/>
-      <el-button v-on:click="AddUserByExcel()" :disabled="listLoading" style="margin: 15px;" type="primary">批量新建</el-button>
+      <h3 style="position: relative; left:15px">学生管理</h3>
       <el-button v-on:click="getViewTimeExcel()" :disabled="listLoading" style="margin: 15px;" type="primary">导出学生今日理论课件学习时间表</el-button>
       <el-button v-on:click="getReplayViewTimeExcel()" :disabled="listLoading" style="margin: 15px;" type="primary">导出学生今日课程回放学习时间表</el-button>
       <el-table
@@ -51,72 +48,15 @@
             {{ scope.row.status}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作" width="300">
+        <el-table-column align="center" label="操作" width="140">
           <template slot-scope="scope">
             <div  style="text-align: right; position: relative; right: 20px">
               <el-button type="primary" v-if="scope.row.status==='student'" @click="TurnToDetail(scope.row.user_id)" > 查看 </el-button>
-              <el-button type="primary" @click="AlterDialogOpen(scope.row)"> 修改 </el-button>
-              <el-button type="danger" @click="handleDelete(scope.row.user_id)" v-if="isself(scope.row.user_id)===false"> 删除 </el-button>
-              <el-button v-if="isself(scope.row.user_id)===true" style="opacity: 0; cursor: default;"> 空白 </el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-dialog title="添加用户信息" :visible.sync="userDialogVisible" width="40%" center>
-        <el-form ref="dataForm" :model="user_form" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-            <el-form-item label="用户名" prop="com">
-                <el-input v-model="user_form.username" clearable style="width: 300px; margin-left: 20px"/>
-            </el-form-item>
-            <el-form-item label="密码" prop="com">
-                <el-input v-model="user_form.password" clearable style="width: 300px; margin-left: 20px"/>
-            </el-form-item>
-            <el-form-item label="用户真名" prop="com">
-                <el-input v-model="user_form.realname" clearable style="width: 300px; margin-left: 20px"/>
-            </el-form-item>
-            <el-form-item label="邮箱" prop="com">
-                <el-input v-model="user_form.email" clearable style="width: 300px; margin-left: 20px"/>
-            </el-form-item>
-            <el-form-item label="手机号" prop="com">
-                <el-input v-model="user_form.phone" clearable style="width: 300px; margin-left: 20px"/>
-            </el-form-item>
-            <el-form-item label="用户身份">
-                <el-radio-group v-model="user_form.status">
-                    <el-radio :label="'teacher'">教师</el-radio>
-                    <el-radio :label="'student'">学生</el-radio>
-                    <el-radio :label="'manager'">学生管理</el-radio>
-                </el-radio-group>
-            </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="userDialogVisible = false"> 取消 </el-button>
-            <el-button type="primary" @click="handleCreate()"> 提交 </el-button>
-        </div>
-        </el-dialog>
-
-        <el-dialog title="修改用户信息" :visible.sync="alterDialogVisible" width="40%" center>
-            <el-form ref="dataForm" :model="user_form" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-                <el-form-item label="用户名" prop="com">
-                    <el-input v-model="user_form.username" clearable style="width: 300px; margin-left: 20px"/>
-                </el-form-item>
-                <el-form-item label="密码" prop="com">
-                    <el-input v-model="user_form.password" clearable style="width: 300px; margin-left: 20px"/>
-                </el-form-item>
-                <el-form-item label="用户真名" prop="com">
-                    <el-input v-model="user_form.realname" clearable style="width: 300px; margin-left: 20px"/>
-                </el-form-item>
-                <el-form-item label="邮箱" prop="com">
-                    <el-input v-model="user_form.email" clearable style="width: 300px; margin-left: 20px"/>
-                </el-form-item>
-                <el-form-item label="手机号" prop="com">
-                    <el-input v-model="user_form.phone" clearable style="width: 300px; margin-left: 20px"/>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="userDialogVisible = false"> 取消 </el-button>
-                <el-button type="primary" @click="handleAlter()"> 提交 </el-button>
-            </div>
-        </el-dialog>
     </div>
   </template>
   
@@ -172,7 +112,9 @@
           }).then(
             res => {
               // console.log(res)
-              this.course_list = res.data.data
+              let user_list = res.data.data
+              const students = user_list.filter(item => item.status === 'student');
+              this.course_list = students
               this.listLoading = false
             }
           )

@@ -134,9 +134,9 @@ export default{
                 data: formData,
             }).then(
                 res => {
-                    console.log(res)
+                    // // console.log(res)
                     this.course_info = res.data.data
-                    console.log(res.data.data.course_limit_time)
+                    // // console.log(res.data.data.course_limit_time)
                     this.status = res.data.data.experiment_status
                     this.time = res.data.data.experiment_countdown
                     if(res.data.data.experiment_status === 'running'){
@@ -149,7 +149,7 @@ export default{
             this.$router.push("/experiment_list")
         },
         handleTimeRemaining(time) {
-            console.log('剩余时间:', time);
+            // // console.log('剩余时间:', time);
         },
         StartExperiment(){
             let course_id = this.course_info.course_id
@@ -200,7 +200,7 @@ export default{
                 data: formData,
             }).then(
                 res => {
-                    console.log(res)
+                    // // console.log(res)
                     loadingInstance.close()
                     location.reload()
                 }
@@ -218,7 +218,7 @@ export default{
                 url: '/teacher/load_experiment_files/',
                 data: formData,
             }).then(res => {
-                console.log(res)
+                // // console.log(res)
                 this.uploaded_files = res.data.data
                 this.listLoading = false
             })
@@ -235,7 +235,7 @@ export default{
                 url: '/teacher/list_user_files_uploaded/',
                 data: formData,
             }).then(res => {
-                console.log(res)
+                // // console.log(res)
                 this.files_uploaded_to_teacher = res.data.data
                 this.uplistLoading = false
             })
@@ -250,7 +250,7 @@ export default{
                 url: '/teacher/list_users_have_uploaded/',
                 data: formData,
             }).then(res => {
-                console.log(res)
+                // // console.log(res)
                 this.users_have_uploaded = res.data.data
                 this.userlistLoading = false
             })
@@ -275,18 +275,18 @@ export default{
                 url: '/teacher/list_user_files_uploaded/',
                 data: formData,
             }).then(res => {
-                console.log(res)
+                // // console.log(res)
                 this.user_files = res.data.data
                 this.uplistLoading = false
             })
         },
         handleSelectionChange(selected) {
             this.selectedFiles = selected.map(file => file.path);
-            console.log(this.selectedFiles)
+            // // console.log(this.selectedFiles)
         },
         handleExpFileSelectionChange(selected){
             this.selectedExpFiles= selected.map(file => file.path);
-            console.log(this.selectedExpFiles)
+            // // console.log(this.selectedExpFiles)
         },
         isSelectable(file) {
             // 这个函数决定哪些文件可以被选中
@@ -297,7 +297,7 @@ export default{
             const formData = new FormData();
             let user_id = localStorage.getItem('user_id')
             let course_id = this.$route.query.course_id
-            console.log(this.selectedFiles)
+            // // console.log(this.selectedFiles)
             formData.append('user_id', user_id)
             formData.append('course_id', course_id)
             formData.append('file_paths', JSON.stringify(this.selectedFiles))
@@ -306,7 +306,7 @@ export default{
                 url: '/teacher/upload_exp_file/',
                 data: formData,
                 }).then(response => {
-                console.log(response)
+                // // console.log(response)
                 window.alert(response.data.msg)
                 this.loadUploadedExpFiles()
                 this.uploadDialogVisible = false
@@ -316,7 +316,7 @@ export default{
         downloadFile(filename) {
             let user_id = localStorage.getItem('user_id')
             let course_id = this.$route.query.course_id
-            console.log(filename)
+            // // console.log(filename)
             let formData = new FormData();
             formData.append('user_id', user_id);
             formData.append('course_id', course_id);
@@ -343,7 +343,7 @@ export default{
         deleteFile(filename) {
             let user_id = localStorage.getItem('user_id')
             let course_id = this.$route.query.course_id
-            console.log(filename)
+            // // console.log(filename)
             let formData = new FormData();
             formData.append('user_id', user_id);
             formData.append('course_id', course_id);

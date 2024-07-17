@@ -119,14 +119,14 @@
           url: '/student/list_course_by_chapter/',
         }).then(
           res => {
-            console.log(res)
+            // // console.log(res)
             this.course_list = res.data.data
             this.listLoading = false
           }
         )
       },
       handleEnter(row){
-            console.log(row)
+            // // console.log(row)
             this.$router.push({
                 path:'/experiment_detail',
                 query:{

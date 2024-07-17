@@ -36,7 +36,6 @@ const actions = {
         
         location.reload()
         const { data } = response
-        console.log(data)
         commit('SET_TOKEN', data.session_id)
         setToken(data.session_id)
         document.cookies = data.session_id
@@ -46,8 +45,6 @@ const actions = {
         localStorage.setItem('email', data.email)
         localStorage.setItem('phone', data.phone)
         localStorage.setItem('status', data.status)
-        console.log(data.status)
-        console.log(localStorage.getItem('status'))
         resolve()
       }).catch(error => {
         reject(error)

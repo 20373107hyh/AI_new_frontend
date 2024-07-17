@@ -60,7 +60,7 @@ export default{
                 data: formData,
             }).then(
                 res => {
-                    console.log(res)
+                    // console.log(res)
                     this.experiment_info = res.data.data
                     this.url = res.data.data.experiment_url
                     this.time = res.data.data.experiment_countdown
@@ -81,7 +81,7 @@ export default{
             //     data: formData,
             // }).then(
             //     res => {
-            //         console.log(res)
+            //         // console.log(res)
             //         this.$router.push('/manage/course')
             //     }
             // )
@@ -110,7 +110,7 @@ export default{
                 data: formData,
             }).then(
                 res => {
-                    console.log(res)
+                    // console.log(res)
                     window.close()
                 }
             )
@@ -127,7 +127,7 @@ export default{
                 data: formData,
             }).then(
                 res => {
-                    console.log(res)
+                    // console.log(res)
                     window.close()
                 }
             )

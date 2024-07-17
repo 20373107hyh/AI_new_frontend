@@ -1,9 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">用户名: {{ userinfo.username }}</div>
-    <div class="dashboard-text">姓名: {{ userinfo.realname }}</div>
-    <div class="dashboard-text">邮箱: {{userinfo.email}}</div>
-    <div class="dashboard-text">电话: {{userinfo.phone}}</div>
+    <div class="dashboard-text">name: {{ realname }}</div>
     <div class="dashboard-text">原密码:<el-input
           :key="passwordType"
           ref="password"
@@ -59,19 +56,7 @@ export default {
   },
   methods:{
     getInfo(){
-      let user_id = localStorage.getItem('user_id');
-      let formData = new FormData()
-            formData.append('user_id', user_id)
-            this.$axios({
-                method: 'post',
-                url: '/student/get_user_info/',
-                data: formData,
-            }).then(
-                res => {
-                    // // console.log(res)
-                    this.userinfo = res.data.data
-                }
-            )
+      this.realname = localStorage.getItem('realname');
     },
     handleChangePassword(){
       let user_id = localStorage.getItem('user_id');

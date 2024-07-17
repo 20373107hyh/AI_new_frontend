@@ -51,35 +51,6 @@
                 </el-table-column>
                 
             </el-table>
-            <h3>学生实验情况：</h3>
-            <el-table 
-                :data="experiment_condition" 
-                v-loading="userlistLoading"
-                style="width: 100%"
-                :height="300"
-                class="custom-table">
-                <el-table-column 
-                prop="name" 
-                label="实验名称">
-                <template slot-scope="scope">
-                    {{ scope.row.experiment_name}}
-                </template>
-                </el-table-column>
-                <el-table-column 
-                prop="name" 
-                label="是否提交实验文件">
-                <template slot-scope="scope">
-                    {{ scope.row.isUploaded}}
-                </template>
-                </el-table-column>
-                <el-table-column 
-                prop="name" 
-                label="分数">
-                <template slot-scope="scope">
-                    {{ scope.row.score}}
-                </template>
-                </el-table-column>
-            </el-table>
 
     </div>
 </template>

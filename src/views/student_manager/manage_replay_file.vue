@@ -1,11 +1,6 @@
 <template>
     <div class="app-container">
-      <h3 style="position: relative; left:15px">课程文件管理</h3>
-      <div style="margin: 15px;"><h4>请先添加章节和小节，然后再添加相应的课件与练习</h4></div>
-      <div class="upload-box" style="margin: 15px;">
-          <el-button v-on:click="addChapterDialogOpen()" style="margin: 15px;" type="primary">添加章节</el-button>
-          <el-button v-on:click="addSectionDialogOpen()" style="margin: 15px;" type="primary">添加小节</el-button>
-      </div>
+      <h3 style="position: relative; left:15px">课程回放</h3>
       
       <el-collapse v-model="activeNames">
         <el-collapse-item 
@@ -14,12 +9,8 @@
             :name="chapter.chapter_num.toString()" 
             :title=" chapter.chapter_num + '  ' + chapter.chapter_name"
         >
-            <div style="display: flex; margin: 15px;"><h3 style="width: 75%;">{{ chapter.chapter_intro }} </h3>
-              <div>  
-                <el-button v-on:click="altChapterDialogOpen(chapter)" style="margin: 15px; position: relative;" type="primary">编辑章节信息</el-button>
-                <el-button v-on:click="deleteChapter(chapter.chapter_num)" style="margin: 15px; position: relative;" type="danger">删除章节</el-button>
-              </div>
-            </div>
+        <div style="display: flex; margin: 15px;"><h3 style="width: 90%;">{{ chapter.chapter_intro }} </h3>
+        </div>
 
             <el-table 
                 :data="chapter.section_list" 
@@ -49,122 +40,19 @@
                 </el-table-column>
                 <el-table-column
                     label="操作"
-                    width="500"
+                    width="400"
                     align="center">
                     <template slot-scope="scope">
-                      <el-button type="primary" @click="altSectionDialogOpen(scope.row)">编辑小节信息</el-button>
-                      <el-button type="primary" @click="uploadDialogOpen(scope.row.chapter_number, scope.row.section_number)">上传课件</el-button>
-                      <el-button type="primary" @click="uploadExerciseDialogOpen(scope.row.chapter_number, scope.row.section_number)">上传练习</el-button>
-                      <el-button type="danger" @click="deleteSection(scope.row.chapter_number, scope.row.section_number)">删除小节</el-button>
+                      <el-button type="primary" @click="uploadDialogOpen(scope.row.chapter_number, scope.row.section_number)">查看课件</el-button>
 
                     </template>
                 </el-table-column>
             </el-table>
         </el-collapse-item>
       </el-collapse>
-      
-    <el-dialog title="添加新章节" :visible.sync="addChapterDialogVisible" width="40%" center>
-      <el-form ref="dataForm" :model="chapter_info" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-        <el-form-item label="课程章节">
-          第<el-input-number v-model="chapter_info.chapter_num" :min="1" :max="100"></el-input-number>章
-        </el-form-item>
-        <el-form-item label="章节名称" prop="com">
-          <el-input v-model="chapter_info.chapter_name" clearable style="width: 300px; margin-left: 20px"/>
-        </el-form-item>
-        <el-form-item label="章节简介">
-          <el-input v-model="chapter_info.chapter_intro" :rows="8" type="textarea" style="width:300px; margin-left: 20px"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addChapterDialogVisible = false"> 取消 </el-button>
-        <el-button type="primary" @click="handleAddChapter()"> 提交 </el-button>
-      </div>
-    </el-dialog>
 
-    <el-dialog title="编辑章节信息" :visible.sync="altChapterDialogVisible" width="40%" center>
-      <el-form ref="dataForm" :model="chapter_info" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-        <el-form-item label="课程章节" style="width: 300px; margin-left: 20px">
-          第{{chapter_info.chapter_num}}章
-        </el-form-item>
-        <el-form-item label="章节名称" prop="com">
-          <el-input v-model="chapter_info.chapter_name" clearable style="width: 300px; margin-left: 20px"/>
-        </el-form-item>
-        <el-form-item label="章节简介">
-          <el-input v-model="chapter_info.chapter_intro" :rows="8" type="textarea" style="width:300px; margin-left: 20px"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addChapterDialogVisible = false"> 取消 </el-button>
-        <el-button type="primary" @click="handleAltChapter()"> 提交 </el-button>
-      </div>
-    </el-dialog>
 
-    <el-dialog title="添加新小节" :visible.sync="addSectionDialogVisible" width="40%" center>
-      <el-form ref="dataForm" :model="section_info" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-        <el-form-item label="课程章节">
-          <div style="display: flex;">
-            第<el-select v-model="section_info.chapter_num" placeholder="请选择" style="width: 300px; margin-left: 20px">
-            <el-option
-              v-for="item in chapters"
-              :key="item.chapter_num"
-              :label="item.chapter_num"
-              :value="item.chapter_num">
-            </el-option>
-            </el-select>章
-          </div>
-        </el-form-item>
-        <el-form-item label="课程小节">
-          第<el-input-number v-model="section_info.section_num" :min="1" :max="100"></el-input-number>节
-        </el-form-item>
-        <el-form-item label="小节名称" prop="com">
-          <el-input v-model="section_info.section_name" clearable style="width: 300px; margin-left: 20px"/>
-        </el-form-item>
-        <el-form-item label="小节简介">
-          <el-input v-model="section_info.section_intro" :rows="8" type="textarea" style="width:300px; margin-left: 20px"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addSectionDialogVisible = false"> 取消 </el-button>
-        <el-button type="primary" @click="handleAddSection()"> 提交 </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog title="编辑小节信息" :visible.sync="altSectionDialogVisible" width="40%" center>
-      <el-form ref="dataForm" :model="section_info" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
-        <el-form-item label="课程章节" style="width: 300px; margin-left: 20px">
-          <div style="display: flex;">
-            第{{section_info.chapter_num}}章
-          </div>
-        </el-form-item>
-        <el-form-item label="课程小节" style="width: 300px; margin-left: 20px">
-          第{{section_info.section_num}}节
-        </el-form-item>
-        <el-form-item label="小节名称" prop="com">
-          <el-input v-model="section_info.section_name" clearable style="width: 300px; margin-left: 20px"/>
-        </el-form-item>
-        <el-form-item label="小节简介">
-          <el-input v-model="section_info.section_intro" :rows="8" type="textarea" style="width:300px; margin-left: 20px"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addSectionDialogVisible = false"> 取消 </el-button>
-        <el-button type="primary" @click="handleAltSection()"> 提交 </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog title="上传课件" :visible.sync="uploadDialogVisible" width="70%" center>
-      <div class="upload-box" style="margin: 15px;">
-        课件上传：
-        <br>选择PDF文件：<input type="file" ref="singleFile" accept=".pdf" @change="handleSingleFileUpload" style="margin: 15px;"/>
-          <el-button v-on:click="submitSingleFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传PDF文件</el-button>
-        <br>选择文件夹（只会上传PDF文件）：<input type="file" ref="folderFiles" multiple webkitdirectory @change="handleFileUpload" style="margin: 15px;"/>
-          <el-button v-on:click="submitFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传文件夹</el-button>
-        <br>视频文件请通过此方式上传，支持MP4和WEBM格式：<input type="file" ref="largeFile" accept=".webm,.mp4" @change="handleLargeFileUpload" style="margin: 15px;"/>
-          <el-button v-on:click="submitLargeFile()" :disabled="listLoading" style="margin: 15px;" type="primary">上传视频文件</el-button>
-          <br>注意，请不要通过上传视频的板块上传其他类型的文件，否则会出现上传文件无法删除的情况
-          <div style="margin: 15px;" v-if="uploadstatus === 1"> 正在上传视频文件： {{percentage}}%，中途请不要离开或者刷新本界面</div>
-          <div style="margin: 15px;" v-if="uploadstatus === 2"> 正在合并视频文件，中途请不要离开或者刷新本界面</div>
-      </div>
+    <el-dialog title="查看课件" :visible.sync="uploadDialogVisible" width="70%" center>
       <el-table 
                 :data="file_list" 
                 v-loading="listLoading"
@@ -182,8 +70,6 @@
                 label="操作">
                 <template slot-scope="scope">
                     <el-button @click="viewFile(scope.row.filename)" type="primary">查看文件</el-button>
-                    <el-button @click="downloadFile(scope.row.filename)" type="primary">下载文件</el-button>
-                    <el-button @click="onDelete([scope.row.filename])" type="danger">删除文件</el-button>
                 </template>
                 </el-table-column>
             </el-table>
@@ -195,11 +81,7 @@
 
     <el-dialog title="添加练习" :visible.sync="uploadExerciseDialogVisible" width="60%" center>
       <div style="margin: 15px;">
-        <el-input v-model="exercise_stem" :rows="15" type="textarea" style="width:100%"/>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="uploadExerciseDialogVisible = false"> 取消 </el-button>
-        <el-button type="primary" @click="handleExerciseUpload()"> 提交 </el-button>
+        <pre>{{ exercise_stem }}</pre>
       </div>
     </el-dialog>
 
@@ -264,7 +146,7 @@
         this.listLoading = true
         this.$axios({
             method: 'post',
-            url: '/teacher/list_theory_sections/',
+            url: '/teacher/list_replay_sections/',
           }).then(
             res => {
               // console.log(res)
@@ -279,9 +161,6 @@
       },
       addChapterDialogOpen(){
         this.addChapterDialogVisible = true
-        this.chapter_info.chapter_name = ''
-        this.chapter_info.chapter_num = 1
-        this.chapter_info.chapter_intro = ''
       },
       handleAddChapter(){
         const formData = new FormData()
@@ -290,7 +169,7 @@
         formData.append('chapter_intro', this.chapter_info.chapter_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/add_theory_chapter/',
+            url: '/teacher/add_replay_chapter/',
             data: formData,
           }).then(
             res => {
@@ -306,10 +185,6 @@
       },
       addSectionDialogOpen(){
         this.addSectionDialogVisible = true
-        this.section_info.chapter_num = 1
-        this.section_info.section_num = 1
-        this.section_info.section_name = ''
-        this.section_info.section_intro = ''
       },
       handleAddSection(){
         const formData = new FormData()
@@ -319,7 +194,7 @@
         formData.append('section_intro', this.section_info.section_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/add_theory_section/',
+            url: '/teacher/add_replay_section/',
             data: formData,
           }).then(
             res => {
@@ -342,7 +217,7 @@
         formData.append('section_number', section_number)
         this.$axios({
             method: 'post',
-            url: '/teacher/load_course_files_by_section/',
+            url: '/teacher/load_replay_files_by_section/',
             data: formData
           }).then(
             res => {
@@ -355,7 +230,7 @@
         formData.append('chapter_num', chapter_num)
         this.$axios({
           method: 'post',
-          url: '/teacher/delete_theory_chapter/',
+          url: '/teacher/delete_replay_chapter/',
           data: formData,
         }).then(res=>{
           window.alert(res.data.msg)
@@ -370,7 +245,7 @@
         formData.append('section_num', section_num)
         this.$axios({
           method: 'post',
-          url: '/teacher/delete_theory_section/',
+          url: '/teacher/delete_replay_section/',
           data: formData,
         }).then(res=>{
           window.alert(res.data.msg)
@@ -383,7 +258,7 @@
         formData.append('section_number', this.current_section)
         this.$axios({
             method: 'post',
-            url: '/teacher/load_course_files_by_section/',
+            url: '/teacher/load_replay_files_by_section/',
             data: formData
           }).then(
             res => {
@@ -520,7 +395,7 @@
           try {
               await this.$axios({
                   method: 'post',
-                  url: '/teacher/upload_course_chunk/',
+                  url: '/teacher/upload_replay_chunk/',
                   data: formData,
                   headers: { 'Content-Type': 'multipart/form-data' } 
               });
@@ -539,7 +414,7 @@
         this.uploadstatus = 2
         await this.$axios({
           method: 'post',
-          url: '/teacher/merge_course_chunks/',
+          url: '/teacher/merge_replay_chunks/',
           data: formData1
         }).then(res=>{
           window.alert(res.data.msg)
@@ -557,7 +432,7 @@
           formData.append('section_number', this.current_section)
           this.$axios({
             method: 'post',
-            url: '/teacher/upload_course_files/',
+            url: '/teacher/upload_replay_files/',
             data: formData,
             headers: {
               'Content-Type': 'multipart/form-data'
@@ -580,7 +455,7 @@
           formData.append('section_number', this.current_section)
           this.$axios({
               method: 'post',
-              url: '/teacher/upload_course_files/',
+              url: '/teacher/upload_replay_files/',
               data: formData,
               headers: {
                   'Content-Type': 'multipart/form-data'
@@ -599,7 +474,7 @@
         formData.append('file_paths', JSON.stringify(path))
         this.$axios({
             method: 'post',
-            url: '/teacher/delete_course_files/',
+            url: '/teacher/delete_replay_files/',
             data: formData,
           }).then(response => {
             window.alert(response.data.msg)
@@ -630,7 +505,7 @@
             // console.log(filename)
             this.$axios({
                 method: 'post',
-                url: '/teacher/download_course_file/', 
+                url: '/teacher/download_replay_file/', 
                 data: formData,
                 responseType: 'blob',
             })
@@ -651,7 +526,7 @@
           path:'/manage/view_course_file',
           query:{
             filename: filename,
-            filetype: 1,
+            filetype: 2,
           }
         })
       },
@@ -668,7 +543,7 @@
         formData.append('chapter_intro', this.chapter_info.chapter_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/alt_theory_chapter/',
+            url: '/teacher/alt_replay_chapter/',
             data: formData,
           }).then(
             res => {
@@ -697,7 +572,7 @@
         formData.append('section_intro', this.section_info.section_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/alt_theory_section/',
+            url: '/teacher/alt_replay_section/',
             data: formData,
           }).then(
             res => {

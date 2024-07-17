@@ -232,7 +232,6 @@ export default {
         path:'/view_course_file',
         query:{
           filename: filename,
-          filetype: 1,
         }
       })
     },

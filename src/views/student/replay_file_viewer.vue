@@ -100,7 +100,7 @@
           if(!this.isVideo(filename)){
             this.$axios({
               method: 'post',
-              url: '/student/download_course_file/',
+              url: '/teacher/download_replay_file/',
               data: formData,
               responseType: 'blob',
               crossOrigin: "Anonymous"
@@ -136,7 +136,7 @@
         formData.append('filename', filename);
         this.$axios({
           method: 'post',
-          url: '/teacher/download_prev_course_file/',
+          url: '/teacher/download_prev_replay_file/',
           data: formData,
         }).then(response => {
           if(response.data.errno === 100001){
@@ -146,7 +146,7 @@
           else{
             const prevfilename = response.data.data
             this.$router.push({
-              path:'/view_course_file',
+              path:'/view_replay_file',
               query:{
                 filename: prevfilename,
                 filetype: 1,
@@ -165,7 +165,7 @@
         formData.append('filename', filename);
         this.$axios({
           method: 'post',
-          url: '/teacher/download_next_course_file/',
+          url: '/teacher/download_next_replay_file/',
           data: formData,
         }).then(response => {
           if(response.data.errno === 100001){
@@ -175,7 +175,7 @@
           else{
             const nextfilename = response.data.data
             this.$router.push({
-              path:'/view_course_file',
+              path:'/view_replay_file',
               query:{
                 filename: nextfilename,
                 filetype: 1,
@@ -197,7 +197,7 @@
             this.page++;
         },
         handleReturn(){
-            this.$router.push('/course_file_list')
+            this.$router.push('/replay_file_list')
         },
         update_view_time(flag){
           const formData = new FormData();
@@ -208,7 +208,7 @@
           formData.append('flag', flag)
           this.$axios({
             method: 'post',
-            url: '/teacher/update_view_course_file/',
+            url: '/teacher/update_view_replay_file/',
             data: formData
           }).then(response=>{
             this.watch_time = response.data.data.view_time

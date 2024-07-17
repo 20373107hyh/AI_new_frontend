@@ -168,7 +168,7 @@ export default {
         }).then(
           res => {
             this.list = res.data.data
-            console.log(res.data.data)
+            // console.log(res.data.data)
             this.listLoading = false
           }
         )
@@ -181,14 +181,14 @@ export default {
       this.listLoading = true
       const formData = new FormData()
       formData.append('container_name', container_name)
-      console.log(container_name)
+      // console.log(container_name)
       this.$axios({
           method: 'post',
           url: '/teacher/start_container/',
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
           }
@@ -198,14 +198,14 @@ export default {
       this.listLoading = true
       const formData = new FormData()
       formData.append('container_name', container_name)
-      console.log(container_name)
+      // console.log(container_name)
       this.$axios({
           method: 'post',
           url: '/teacher/stop_container/',
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
           }
@@ -217,15 +217,15 @@ export default {
       const formData = new FormData()
       formData.append('container_name', container_name)
       formData.append('author_id', author_id)
-      console.log(container_name)
-      console.log(author_id)
+      // console.log(container_name)
+      // console.log(author_id)
       this.$axios({
           method: 'post',
           url: '/teacher/delete_container/',
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             window.alert(res.data.msg)
             this.fetchData()
             this.listLoading = false
@@ -239,7 +239,7 @@ export default {
           url: '/teacher/show_images/',
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.image_list = res.data.data
           }
         )
@@ -258,7 +258,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
             window.alert(res.data.msg)
@@ -274,7 +274,7 @@ export default {
           url: '/teacher/show_images/',
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.image_list = res.data.data
           }
         )
@@ -290,7 +290,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
             window.alert(res.data.msg)
@@ -307,7 +307,7 @@ export default {
           url: '/teacher/show_images/',
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.image_list = res.data.data
           }
         )
@@ -322,7 +322,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
             window.alert(res.data.msg)
@@ -332,7 +332,7 @@ export default {
         this.temp.image_name = ''
     },
     handleEdit(row){
-      // console.log(url)
+      // // console.log(url)
       // window.open(url, '_blank');
       this.$router.push({
         path:'/manage/container_detail',

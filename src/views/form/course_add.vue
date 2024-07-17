@@ -86,7 +86,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // // console.log(res)
             window.alert('新课程创建成功')
           }
         )

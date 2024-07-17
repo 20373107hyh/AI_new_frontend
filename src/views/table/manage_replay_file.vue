@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
-      <h3 style="position: relative; left:15px">课程文件管理</h3>
-      <div style="margin: 15px;"><h4>请先添加章节和小节，然后再添加相应的课件与练习</h4></div>
+      <h3 style="position: relative; left:15px">回放文件管理</h3>
+      <div style="margin: 15px;"><h4>请先添加章节和小节，然后再添加相应的课件</h4></div>
       <div class="upload-box" style="margin: 15px;">
           <el-button v-on:click="addChapterDialogOpen()" style="margin: 15px;" type="primary">添加章节</el-button>
           <el-button v-on:click="addSectionDialogOpen()" style="margin: 15px;" type="primary">添加小节</el-button>
@@ -49,12 +49,11 @@
                 </el-table-column>
                 <el-table-column
                     label="操作"
-                    width="500"
+                    width="400"
                     align="center">
                     <template slot-scope="scope">
                       <el-button type="primary" @click="altSectionDialogOpen(scope.row)">编辑小节信息</el-button>
                       <el-button type="primary" @click="uploadDialogOpen(scope.row.chapter_number, scope.row.section_number)">上传课件</el-button>
-                      <el-button type="primary" @click="uploadExerciseDialogOpen(scope.row.chapter_number, scope.row.section_number)">上传练习</el-button>
                       <el-button type="danger" @click="deleteSection(scope.row.chapter_number, scope.row.section_number)">删除小节</el-button>
 
                     </template>
@@ -264,7 +263,7 @@
         this.listLoading = true
         this.$axios({
             method: 'post',
-            url: '/teacher/list_theory_sections/',
+            url: '/teacher/list_replay_sections/',
           }).then(
             res => {
               // console.log(res)
@@ -279,9 +278,6 @@
       },
       addChapterDialogOpen(){
         this.addChapterDialogVisible = true
-        this.chapter_info.chapter_name = ''
-        this.chapter_info.chapter_num = 1
-        this.chapter_info.chapter_intro = ''
       },
       handleAddChapter(){
         const formData = new FormData()
@@ -290,7 +286,7 @@
         formData.append('chapter_intro', this.chapter_info.chapter_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/add_theory_chapter/',
+            url: '/teacher/add_replay_chapter/',
             data: formData,
           }).then(
             res => {
@@ -306,10 +302,6 @@
       },
       addSectionDialogOpen(){
         this.addSectionDialogVisible = true
-        this.section_info.chapter_num = 1
-        this.section_info.section_num = 1
-        this.section_info.section_name = ''
-        this.section_info.section_intro = ''
       },
       handleAddSection(){
         const formData = new FormData()
@@ -319,7 +311,7 @@
         formData.append('section_intro', this.section_info.section_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/add_theory_section/',
+            url: '/teacher/add_replay_section/',
             data: formData,
           }).then(
             res => {
@@ -342,7 +334,7 @@
         formData.append('section_number', section_number)
         this.$axios({
             method: 'post',
-            url: '/teacher/load_course_files_by_section/',
+            url: '/teacher/load_replay_files_by_section/',
             data: formData
           }).then(
             res => {
@@ -355,7 +347,7 @@
         formData.append('chapter_num', chapter_num)
         this.$axios({
           method: 'post',
-          url: '/teacher/delete_theory_chapter/',
+          url: '/teacher/delete_replay_chapter/',
           data: formData,
         }).then(res=>{
           window.alert(res.data.msg)
@@ -370,7 +362,7 @@
         formData.append('section_num', section_num)
         this.$axios({
           method: 'post',
-          url: '/teacher/delete_theory_section/',
+          url: '/teacher/delete_replay_section/',
           data: formData,
         }).then(res=>{
           window.alert(res.data.msg)
@@ -383,7 +375,7 @@
         formData.append('section_number', this.current_section)
         this.$axios({
             method: 'post',
-            url: '/teacher/load_course_files_by_section/',
+            url: '/teacher/load_replay_files_by_section/',
             data: formData
           }).then(
             res => {
@@ -520,7 +512,7 @@
           try {
               await this.$axios({
                   method: 'post',
-                  url: '/teacher/upload_course_chunk/',
+                  url: '/teacher/upload_replay_chunk/',
                   data: formData,
                   headers: { 'Content-Type': 'multipart/form-data' } 
               });
@@ -539,7 +531,7 @@
         this.uploadstatus = 2
         await this.$axios({
           method: 'post',
-          url: '/teacher/merge_course_chunks/',
+          url: '/teacher/merge_replay_chunks/',
           data: formData1
         }).then(res=>{
           window.alert(res.data.msg)
@@ -557,7 +549,7 @@
           formData.append('section_number', this.current_section)
           this.$axios({
             method: 'post',
-            url: '/teacher/upload_course_files/',
+            url: '/teacher/upload_replay_files/',
             data: formData,
             headers: {
               'Content-Type': 'multipart/form-data'
@@ -580,7 +572,7 @@
           formData.append('section_number', this.current_section)
           this.$axios({
               method: 'post',
-              url: '/teacher/upload_course_files/',
+              url: '/teacher/upload_replay_files/',
               data: formData,
               headers: {
                   'Content-Type': 'multipart/form-data'
@@ -599,7 +591,7 @@
         formData.append('file_paths', JSON.stringify(path))
         this.$axios({
             method: 'post',
-            url: '/teacher/delete_course_files/',
+            url: '/teacher/delete_replay_files/',
             data: formData,
           }).then(response => {
             window.alert(response.data.msg)
@@ -630,7 +622,7 @@
             // console.log(filename)
             this.$axios({
                 method: 'post',
-                url: '/teacher/download_course_file/', 
+                url: '/teacher/download_replay_file/', 
                 data: formData,
                 responseType: 'blob',
             })
@@ -651,7 +643,7 @@
           path:'/manage/view_course_file',
           query:{
             filename: filename,
-            filetype: 1,
+            filetype: 2,
           }
         })
       },
@@ -668,7 +660,7 @@
         formData.append('chapter_intro', this.chapter_info.chapter_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/alt_theory_chapter/',
+            url: '/teacher/alt_replay_chapter/',
             data: formData,
           }).then(
             res => {
@@ -697,7 +689,7 @@
         formData.append('section_intro', this.section_info.section_intro)
         this.$axios({
             method: 'post',
-            url: '/teacher/alt_theory_section/',
+            url: '/teacher/alt_replay_section/',
             data: formData,
           }).then(
             res => {

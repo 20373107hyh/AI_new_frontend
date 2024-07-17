@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h3 style="position: relative; left:15px">理论课程</h3>
+    <h3 style="position: relative; left:15px">课程回放</h3>
     <el-collapse v-model="activeNames">
       <el-collapse-item 
           v-for="chapter in chapters" 
@@ -43,7 +43,6 @@
                   align="center">
                   <template slot-scope="scope">
                     <el-button type="primary" @click="uploadDialogOpen(scope.row.chapter_number, scope.row.section_number)">查看课件</el-button>
-                    <el-button type="primary" @click="uploadExerciseDialogOpen(scope.row.chapter_number, scope.row.section_number)">查看练习</el-button>
 
                   </template>
               </el-table-column>
@@ -146,7 +145,7 @@ export default {
       this.listLoading = true
       this.$axios({
           method: 'post',
-          url: '/teacher/list_theory_sections/',
+          url: '/teacher/list_replay_sections/',
         }).then(
           res => {
             // // console.log(res)
@@ -168,7 +167,7 @@ export default {
       formData.append('section_number', section_number)
       this.$axios({
           method: 'post',
-          url: '/teacher/load_course_files_by_section/',
+          url: '/teacher/load_replay_files_by_section/',
           data: formData
         }).then(
           res => {
@@ -182,7 +181,7 @@ export default {
       formData.append('section_number', this.current_section)
       this.$axios({
           method: 'post',
-          url: '/teacher/load_course_files_by_section/',
+          url: '/teacher/load_replay_files_by_section/',
           data: formData
         }).then(
           res => {
@@ -229,10 +228,10 @@ export default {
     },
     viewFile(filename){
       this.$router.push({
-        path:'/view_course_file',
+        path:'/view_replay_file',
         query:{
           filename: filename,
-          filetype: 1,
+          filetype: 2
         }
       })
     },

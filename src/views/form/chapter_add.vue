@@ -5,7 +5,7 @@
     <el-dialog title="添加新章节" :visible.sync="addDialogVisible" width="40%" center>
       <el-form ref="dataForm" :model="form" label-position="left" label-width="100px" style="width: 400px; margin-left: 50px">
         <el-form-item label="实验章节">
-          第<el-input-number v-model="form.chapter_num" :min="1" :max="7"></el-input-number>章
+          第<el-input-number v-model="form.chapter_num" :min="1" :max="100"></el-input-number>章
         </el-form-item>
         <el-form-item label="章节名称" prop="com">
           <el-input v-model="form.chapter_name" clearable style="width: 300px; margin-left: 20px"/>
@@ -86,7 +86,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // // console.log(res)
             window.alert(res.data.msg)
             this.fetchData()
           }
@@ -94,6 +94,7 @@ export default {
       this.addDialogVisible = false
       this.form.chapter_name = ''
       this.form.chapter_num = 1
+      this.form.chapter_intro = ''
     },
     fetchData() {
       this.listLoading = true
@@ -120,7 +121,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // // console.log(res)
             window.alert(res.data.msg)
             this.fetchData()
           }

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h3 style="position: relative; left:15px">课程管理</h3>
+    <h3 style="position: relative; left:15px">实验课程管理</h3>
     <el-button @click="CreateCourseOpen()" style="margin: 20px;" type="primary"> 创建新课程 </el-button>
 
     <el-table
@@ -100,7 +100,7 @@ export default {
           url: '/teacher/list_course/',
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.course_list = res.data.data
             this.listLoading = false
           }
@@ -111,7 +111,7 @@ export default {
       // })
     },
     handleEnter(row){
-      console.log(row)
+      // console.log(row)
       this.$router.push({
         path:'/manage/course_detail',
         query:{
@@ -123,14 +123,14 @@ export default {
       this.listLoading = true
       const formData = new FormData()
       formData.append('container_name', container_name)
-      console.log(container_name)
+      // console.log(container_name)
       this.$axios({
           method: 'post',
           url: '/teacher/stop_container/',
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
           }
@@ -138,7 +138,7 @@ export default {
     },
     handleDelete(course_id){
       this.listLoading = true
-      console.log(course_id)
+      // console.log(course_id)
       const formData = new FormData()
       formData.append('course_id', course_id)
       this.$axios({
@@ -147,7 +147,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             window.alert(res.data.msg)
             this.fetchData()
             this.listLoading = false
@@ -168,7 +168,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
             window.alert('新容器创建成功')
@@ -184,7 +184,7 @@ export default {
           url: '/teacher/show_images/',
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.image_list = res.data.data
           }
         )
@@ -200,7 +200,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
             window.alert('新镜像创建成功')
@@ -217,7 +217,7 @@ export default {
           url: '/teacher/show_images/',
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.image_list = res.data.data
           }
         )
@@ -232,7 +232,7 @@ export default {
           data: formData,
         }).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.fetchData()
             this.listLoading = false
             window.alert(res.data.msg)
@@ -242,7 +242,7 @@ export default {
         this.temp.image_name = ''
     },
     handleEdit(url){
-      console.log(url)
+      // console.log(url)
       window.open(url, '_blank');
     }
   }
