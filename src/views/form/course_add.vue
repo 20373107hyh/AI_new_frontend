@@ -37,6 +37,20 @@
           <el-radio :label="'困难'">困难</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="起始时间">
+        <el-date-picker
+          v-model="form.start_time"
+          type="datetime"
+          placeholder="选择日期时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="终止时间">
+        <el-date-picker
+          v-model="form.end_time"
+          type="datetime"
+          placeholder="选择日期时间">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item label="课程简介">
         <el-input v-model="form.course_intro" :rows="8" type="textarea" style="width:800px"/>
       </el-form-item>
@@ -63,6 +77,8 @@ export default {
         course_chapter: 1,
         course_intro: '',
         course_aim: '',
+        start_time: '',
+        end_time: '',
       },
       list:[],
       chapter_list:[],
@@ -71,6 +87,8 @@ export default {
   methods: {
     onSubmit() {
       let author_id = localStorage.getItem("user_id")
+      let start_time = new Date(this.form.start_time).toISOString()
+      let end_time = new Date(this.form.end_time).toISOString()
       const formData = new FormData()
       formData.append('course_name', this.form.course_name)
       formData.append('author_id', author_id)
@@ -80,6 +98,8 @@ export default {
       formData.append('course_chapter', this.form.course_chapter)
       formData.append('course_intro', this.form.course_intro)
       formData.append('course_aim', this.form.course_aim)
+      formData.append('start_time', start_time)
+      formData.append('end_time', end_time)
       this.$axios({
           method: 'post',
           url: '/teacher/create_course/',

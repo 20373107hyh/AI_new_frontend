@@ -8,6 +8,8 @@
         <div class="detail-text">实验限时：<div style="width:80%">{{ course_info.course_limit_time }}小时</div></div>
         <div class="detail-text">实验简介：<div style="width:80%">{{ course_info.course_intro }}</div></div>
         <div class="detail-text">实验目标：<div style="width:80%">{{ course_info.course_aim }}</div></div>
+        <div class="detail-text">实验起始时间：<div style="width:80%">{{ course_info.start_time }}</div></div>
+        <div class="detail-text">实验终止时间：<div style="width:80%">{{ course_info.end_time }}</div></div>
       </div>
       <div class="detail-text">
         <el-button @click="StartExperiment()" v-if="status==='uncreated'" type="primary">开始实验 </el-button>
@@ -169,8 +171,13 @@ export default{
                 data: formData,
             }).then(
                 res => {
+                    if(res.data.errno !== 99999){
+                        window.alert(res.data.msg)
+                    }
                     loadingInstance.close()
-                    window.open(res.data.data.experiment_url, '_blank');
+                    if(res.data.data.errno !== 100001){
+                        window.open(res.data.data.experiment_url, '_blank');
+                    }
                     this.$router.push({
                         path:'/experiment_detail',
                         query:{

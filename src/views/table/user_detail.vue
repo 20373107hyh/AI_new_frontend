@@ -67,6 +67,20 @@
                 </el-table-column>
                 <el-table-column 
                 prop="name" 
+                label="实验次数">
+                <template slot-scope="scope">
+                    {{ scope.row.count}}
+                </template>
+                </el-table-column>
+                <el-table-column 
+                prop="name" 
+                label="实验总时长">
+                <template slot-scope="scope">
+                    {{ scope.row.time}}分钟
+                </template>
+                </el-table-column>
+                <el-table-column 
+                prop="name" 
                 label="是否提交实验文件">
                 <template slot-scope="scope">
                     {{ scope.row.isUploaded}}
